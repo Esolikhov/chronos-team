@@ -2,4 +2,4 @@
 fastapi==0.128.2
 uvicorn==0.48.0
 # IANA timezone data is required on Windows, where system tzdb may be absent.
-tzdata==2026.2
+tzdata==2026.5
