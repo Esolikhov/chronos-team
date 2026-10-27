@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chronos Team API — документация</title>
+<link rel="stylesheet" href="/assets/docs.css"></head>
+<body>
+<main class="container">
+<a class="back" href="/">← Вернуться в Chronos Team</a>
+<div class="eyebrow">REST API · v2.0</div>
+<h1>Документация API</h1>
+<p class="lead">Локальное API учёта рабочего времени. Все данные передаются в JSON; временные интервалы используют Unix timestamp в миллисекундах. Эта документация работает без подключения к внешним CDN.</p>
+<p><a href="/api/openapi.json">Открыть OpenAPI JSON</a></p>
+<div class="notice">Для каждого POST, PUT и DELETE запроса обязателен HTTP-заголовок <code>X-Chronos-Request: 1</code>. Для JSON с телом — <code>Content-Type: application/json</code>. Это защита локального приложения от обычных CSRF-форм, но не полноценная авторизация.</div>
+<div class="notice">Без аутентификации: интерфейс и API предназначены только для локального тестирования. Не публикуйте приложение в Интернет без защиты доступа.</div>
+<h2>Сотрудники</h2>
+<div class="endpoint"><code class="get">GET</code> <code>/api/employees</code><span>Список сотрудников и активных таймеров</span></div>
+<div class="endpoint"><code class="post">POST</code> <code>/api/employees</code><span>Добавить сотрудника</span></div>
+<div class="endpoint"><code class="put">PUT</code> <code>/api/employees/{employee_id}</code><span>Изменить ФИО, должность и часовую норму</span></div>
+<pre>{"full_name":"Алексей Миронов","position":"Тестировщик","weekly_target_hours":40}</pre>
+<h2>Таймеры и журнал</h2>
+<div class="endpoint"><code class="post">POST</code> <code>/api/timers/start</code><span>Запуск (409, если таймер уже активен)</span></div>
+<pre>{"employee_id":1,"description":"Проверка формы","category":"Тестирование"}</pre>
+<div class="endpoint"><code class="post">POST</code> <code>/api/timers/{employee_id}/stop</code><span>Остановить текущий таймер сотрудника</span></div>
+<div class="endpoint"><code class="put">PUT</code> <code>/api/entries/{entry_id}</code><span>Изменить описание и категорию</span></div>
+<div class="endpoint"><code class="delete">DELETE</code> <code>/api/entries/{entry_id}</code><span>Удалить завершённую запись</span></div>
+<h2>История изменений</h2>
+<div class="endpoint"><code class="get">GET</code> <code>/api/audit?limit=100&amp;employee_id=1</code><span>Последние изменения, включая значения до и после (до 500 событий на запрос)</span></div>
+<h2>Отчёт и мониторинг</h2>
+<div class="endpoint"><code class="get">GET</code> <code>/api/report?start_ms=...&amp;end_ms=...&amp;tz=Asia/Dushanbe</code><span>Период [начало, конец) и необязательный employee_id</span></div>
+<div class="endpoint"><code class="get">GET</code> <code>/api/health</code><span>Проверка доступности SQLite-хранилища</span></div>
+<p class="foot">Ошибки валидации возвращают HTTP 422, отсутствующие сущности — 404, конфликт таймеров — 409. Ограничение размера отчёта — 20 000 записей (при превышении HTTP 413); для POST/PUT допускается тело до 16 KiB. Полный OpenAPI доступен по ссылке выше.</p>
+</main>
+</body></html>

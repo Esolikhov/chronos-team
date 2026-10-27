@@ -1,0 +1,30 @@
+name: Tests & quality checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - name: Install test dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Test backend, database and security regression suite
+        run: python -m pytest -q --cov=app --cov=scripts --cov-report=term-missing --cov-fail-under=90
+      - name: Compile all Python modules
+        run: python -m compileall -q app scripts
+      - name: Check JavaScript syntax and CSV/XSS escaping
+        run: |
+          node --check app/static/app.js
+          node tests/frontend-check.mjs
